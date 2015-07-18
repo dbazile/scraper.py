@@ -149,6 +149,7 @@ class ArticleParser(html.parser.HTMLParser):
         if self.inside_paragraph() and tag == 'p':
             path = '/'.join(self.tag_stack)
             paragraph = ''.join(self.fragments).strip()
+            paragraph = re.sub('\s+', ' ', paragraph)  # Collapse whitespace
             self.registry.setdefault(path, []).append(paragraph)
             self.fragments.clear()
         del self.tag_stack[-1]
