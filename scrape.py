@@ -1,3 +1,4 @@
+import collections
 import datetime
 import html.parser
 import json
@@ -49,7 +50,7 @@ def fetch_article_contents(url):
     contents = urllib.request.urlopen(url)
     parser = ArticleParser()
     parser.feed(contents.read().decode('utf-8'))
-    text = ''.join(['<p>{}</p>'.format(s) for s in parser.paragraphs])
+    text = ''.join(['<p>{}</p>'.format(s) for s in parser.get_paragraphs()])
     return (contents.geturl(), text)
 
 
@@ -134,28 +135,44 @@ def save_document(document):
 ## SUPPORTING JUNK
 
 class ArticleParser(html.parser.HTMLParser):
-    paragraphs = []
-    candidate_paragraphs = []
-    inside_paragraph = False
-    
+    def __init__(self):
+        super().__init__()
+        self.fragments = []
+        self.tag_stack = []
+        self.registry = collections.OrderedDict()
+
     def handle_starttag(self, tag, attrib):
-        self.inside_paragraph = tag == 'p'
+        self.tag_stack.append(tag)
 
     def handle_endtag(self, tag):
-        # Heuristic check to determine if we were in an article container
-        heuristic_score = len(self.candidate_paragraphs)
-        if tag == 'article': heuristic_score += 5
+        if self.inside_paragraph() and tag == 'p':
+            path = '/'.join(self.tag_stack)
+            paragraph = ''.join(self.fragments).strip()
+            self.registry.setdefault(path, []).append(paragraph)
+            self.fragments.clear()
+        del self.tag_stack[-1]
 
-        # If it passes, retain the paragraphs
-        if heuristic_score >= ARTICLE_HEURISTIC_THRESHOLD:
-            self.paragraphs += self.candidate_paragraphs
+    def inside_paragraph(self):
+        return 'p' in self.tag_stack
 
-        self.candidate_paragraphs.clear()
-        
     def handle_data(self, data):
-        if self.inside_paragraph:
-            self.paragraphs.append(data)
-            self.inside_paragraph = False
+        if self.inside_paragraph():
+            self.fragments.append(data)
+
+    def get_paragraphs(self):
+        paragraphs = []
+        for path, candidates in self.registry.items():
+
+            # Large concentration of <p> tags in one container
+            heuristic_score = len(candidates)
+
+            # Big bonus if any ancestor is an <article>
+            if '/article/' in path: heuristic_score += int(ARTICLE_HEURISTIC_THRESHOLD * 0.8)
+
+            if heuristic_score >= ARTICLE_HEURISTIC_THRESHOLD:
+                paragraphs += candidates
+
+        return paragraphs
 
 
 class ExtractionError(Exception):
