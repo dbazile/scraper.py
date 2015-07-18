@@ -10,7 +10,7 @@ import xml.etree.ElementTree as XML
 
 ARTICLE_HEURISTIC_THRESHOLD = 10
 COUNT = 5
-RSS_DATE_FORMAT     = '%a, %d %b %Y %H:%M:%S'
+RSS_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S'
 RSS_FEEDS = {'ars': 'http://feeds.arstechnica.com/arstechnica/index',
              'bbc_tech': 'http://feeds.bbci.co.uk/news/technology/rss.xml',
              'ign': 'http://feeds.ign.com/ign/articles',
