@@ -110,9 +110,6 @@ def log_message(message, *params):
 
 
 def normalize_date(value):
-    then = datetime.datetime(1970, 1, 1)
-    truncated = value[0:25]  # TODO cry about this
-    then = datetime.datetime.strptime(truncated, RSS_DATE_FORMAT)
     try:
         truncated = value[0:25]  # TODO cry about this
         then = datetime.datetime.strptime(truncated, RSS_DATE_FORMAT)
