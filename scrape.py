@@ -12,7 +12,10 @@ ARTICLE_HEURISTIC_THRESHOLD = 10
 COUNT = 5
 RSS_DATE_FORMAT     = '%a, %d %b %Y %H:%M:%S'
 RSS_FEEDS = {'ars': 'http://feeds.arstechnica.com/arstechnica/index',
-             'bbc_tech': 'http://feeds.bbci.co.uk/news/technology/rss.xml'}
+             'bbc_tech': 'http://feeds.bbci.co.uk/news/technology/rss.xml',
+             'ign': 'http://feeds.ign.com/ign/articles',
+             'techcrunch': 'http://feeds.feedburner.com/Mobilecrunch',
+             'uxbooth': 'http://feedpress.me/uxbooth'}
 XQ_ITEM = 'channel/item'
 XQ_ITEM_AUTHOR = '{http://purl.org/dc/elements/1.1/}creator'
 XQ_ITEM_DATE = 'pubDate'
