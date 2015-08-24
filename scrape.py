@@ -53,7 +53,7 @@ def fetch_article_contents(url):
     contents = urllib.request.urlopen(url)
     parser = ArticleParser()
     parser.feed(contents.read().decode('utf-8'))
-    text = ''.join(['<p>{}</p>'.format(s) for s in parser.get_paragraphs()])
+    text = ''.join(['<p>{}</p>'.format(s) for s in parser.paragraphs])
     return (contents.geturl(), text)
 
 
@@ -161,7 +161,8 @@ class ArticleParser(html.parser.HTMLParser):
         if self.inside_paragraph():
             self.fragments.append(data)
 
-    def get_paragraphs(self):
+    @property
+    def paragraphs(self):
         paragraphs = []
         for path, candidates in self.registry.items():
 
